@@ -41,3 +41,45 @@ window.onscroll =() => {
     menuIcon.classList.remove('bx-x');
     navbar.classList.remove('active');
 }
+
+// Contact form handling
+const contactForm = document.getElementById('contact-form');
+const formStatus = document.getElementById('form-status');
+
+if (contactForm) {
+    contactForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(contactForm);
+        const submitBtn = contactForm.querySelector('.btn');
+        const originalBtnText = submitBtn.textContent;
+        
+        // Disable button and show loading state
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+        formStatus.textContent = '';
+        
+        try {
+            const response = await fetch(contactForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                formStatus.innerHTML = '<p style="color: #00ff00;">✓ Thank you! Your message has been sent successfully.I will contact you soon.</p>';
+                contactForm.reset();
+            } else {
+                throw new Error('Form submission failed');
+            }
+        } catch (error) {
+            formStatus.innerHTML = '<p style="color: #ff0000;">✗ Oops! There was a problem sending your message. Please try again.</p>';
+        } finally {
+            // Re-enable button
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+        }
+    });
+}
